@@ -77,4 +77,13 @@ public class Point3D {
 		return this.x == otherPoint3D.x && this.y == otherPoint3D.y
 				&& this.z == otherPoint3D.z;
 	}
+
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 53 * hash + (int)this.x;
+		hash = 53 * hash + (int)this.y;
+		hash = 53 * hash + (int)this.z;
+		return hash;
+	}
 }
