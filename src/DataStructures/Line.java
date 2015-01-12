@@ -5,6 +5,7 @@ import java.util.List;
 
 /**
  * Simple class to store line information
+ * 
  *
  */
 public class Line {
@@ -154,12 +155,8 @@ public class Line {
 	 * @return true is the point is located on the line
 	 */
 	public boolean containsPoint(Point3D point) {
-		List<Point3D> points = getPointPartitioning();
-		for (Point3D linesPoint : points) {
-			if (linesPoint.equals(point)) {
-				return true;
-			}
-		}
-		return false;
+		return point.isXBetween(getAx(), getDx())
+				&& point.isYBetween(getAy(), getDy())
+				&& point.isZBetween(getAz(), getDz());
 	}
 }

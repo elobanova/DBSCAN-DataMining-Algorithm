@@ -87,4 +87,19 @@ public class Point3D {
 		hash = 53 * hash + (int) this.z;
 		return hash;
 	}
+
+	public boolean isXBetween(float ax, float dx) {
+		return dx >= 0 ? this.x >= ax - dx && this.x <= ax : this.x >= ax
+				&& this.x <= ax - dx;
+	}
+
+	public boolean isYBetween(float ay, float dy) {
+		return dy >= 0 ? this.y >= ay - dy && this.y <= ay : this.y >= ay
+				&& this.y <= ay - dy;
+	}
+
+	public boolean isZBetween(float az, float dz) {
+		return dz >= 0 ? this.z >= az - dz && this.z <= az : this.z >= az
+				&& this.z <= az - dz;
+	}
 }
