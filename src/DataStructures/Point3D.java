@@ -2,6 +2,7 @@ package DataStructures;
 
 public class Point3D {
 	public static final int SPACE_DIMENSION = 3;
+	public final static int NO_CLUSTER_ASSIGNED = -1;
 
 	private final double x;
 	private final double y;
@@ -14,7 +15,7 @@ public class Point3D {
 		this.y = y;
 		this.z = z;
 
-		clusterIdentifier = -1;
+		clusterIdentifier = NO_CLUSTER_ASSIGNED;
 	}
 
 	/**
@@ -81,9 +82,9 @@ public class Point3D {
 	@Override
 	public int hashCode() {
 		int hash = 3;
-		hash = 53 * hash + (int)this.x;
-		hash = 53 * hash + (int)this.y;
-		hash = 53 * hash + (int)this.z;
+		hash = 53 * hash + (int) this.x;
+		hash = 53 * hash + (int) this.y;
+		hash = 53 * hash + (int) this.z;
 		return hash;
 	}
 }

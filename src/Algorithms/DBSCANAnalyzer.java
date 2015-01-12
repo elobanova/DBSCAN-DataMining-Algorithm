@@ -11,6 +11,7 @@ import DataStructures.Line;
 import DataStructures.Point3D;
 
 public class DBSCANAnalyzer {
+
 	private final double eps;
 	private final double minPts;
 	private final AbstractDistanceMeasure distanceMeasure;
@@ -38,10 +39,35 @@ public class DBSCANAnalyzer {
 		}
 		List<Point3D> dataset = partitionLinesIntoPoints(lines);
 		performClusteringOnPoints(dataset);
-		for (Point3D point : dataset) {
+		assignClustersToLines(dataset, lines);
+	}
+
+	/**
+	 * Assigns the cluster ids to the lines based on the already clustered
+	 * points of those lines
+	 * 
+	 * @param dataset
+	 *            the clustered points
+	 * @param lines
+	 *            the lines to cluster
+	 * @throws IllegalArgumentException
+	 *             if the lists of lines or points provided are null
+	 */
+	private void assignClustersToLines(List<Point3D> dataset, List<Line> lines)
+			throws IllegalArgumentException {
+		if (dataset == null || lines == null) {
+			String errorMessage = "The arguments dataset or lines are not valid.";
+			throw new IllegalArgumentException(errorMessage);
+		}
+
+		System.out.println("Assigning clustering to lines...");
+		for (int i = 0; i < dataset.size(); i += Line.NUMBER_OF_SECTIONS_IN_LINE + 1) {
 			for (Line line : lines) {
-				if (line.getCluster() == -1 && line.containsPoint(point)) {
+				Point3D point = dataset.get(i);
+				if (line.getCluster() == Point3D.NO_CLUSTER_ASSIGNED
+						&& line.containsPoint(point)) {
 					line.setCluster(point.getClusterIdentifier());
+					break;
 				}
 			}
 		}
@@ -61,8 +87,10 @@ public class DBSCANAnalyzer {
 			String errorMessage = "The dataset argument is not valid.";
 			throw new IllegalArgumentException(errorMessage);
 		}
+
+		System.out.println("Performing clustering on points...");
 		Map<Point3D, Integer> visited = new HashMap<Point3D, Integer>();
-		int clusterIdentifier = -1;
+		int clusterIdentifier = Point3D.NO_CLUSTER_ASSIGNED;
 		for (Point3D point : dataset) {
 
 			// object is not yet classified
@@ -78,7 +106,7 @@ public class DBSCANAnalyzer {
 					collectDensityReachableObjects(point, clusterIdentifier,
 							neighbours, dataset, visited);
 				} else {
-					visited.put(point, -1);
+					visited.put(point, Point3D.NO_CLUSTER_ASSIGNED);
 				}
 			}
 		}
@@ -101,6 +129,7 @@ public class DBSCANAnalyzer {
 	private void collectDensityReachableObjects(Point3D point,
 			int clusterIdentifier, List<Point3D> neighbours,
 			List<Point3D> dataset, Map<Point3D, Integer> visited) {
+		System.out.println("Collecting density-reachable objects...");
 		point.setClusterIdentifier(clusterIdentifier);
 		List<Point3D> neighboursCopy = new ArrayList<Point3D>(neighbours);
 		for (int i = 0; i < neighboursCopy.size(); i++) {
@@ -118,7 +147,7 @@ public class DBSCANAnalyzer {
 			}
 
 			if (currentClusterIdentifier == null
-					|| currentClusterIdentifier == -1) {
+					|| currentClusterIdentifier == Point3D.NO_CLUSTER_ASSIGNED) {
 				visited.put(current, clusterIdentifier);
 				current.setClusterIdentifier(clusterIdentifier);
 			}
@@ -174,6 +203,7 @@ public class DBSCANAnalyzer {
 	 * @return a list of points which belong to the lines
 	 */
 	private List<Point3D> partitionLinesIntoPoints(List<Line> lines) {
+		System.out.println("Started partitioning lines into points");
 		List<Point3D> dataset = new ArrayList<Point3D>();
 		for (Line line : lines) {
 			dataset.addAll(line.getPointPartitioning());
