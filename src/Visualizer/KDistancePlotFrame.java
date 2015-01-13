@@ -15,7 +15,7 @@ public class KDistancePlotFrame extends JFrame {
 	public KDistancePlotFrame(int width, int height, List<Line> lines,
 			DBSCANAnalyzer analyzer) throws IllegalArgumentException {
 		if (width < 0 || height < 0 || lines == null) {
-			String errorMessage = "The frame's argument are not valid.";
+			String errorMessage = "The frame's arguments are not valid.";
 			throw new IllegalArgumentException(errorMessage);
 		}
 
