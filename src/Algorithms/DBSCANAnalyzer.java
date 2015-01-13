@@ -12,14 +12,30 @@ import DataStructures.Point3D;
 
 public class DBSCANAnalyzer {
 
-	private final double eps;
+	private double eps;
 	private final double minPts;
 	private final AbstractDistanceMeasure distanceMeasure;
 
-	public DBSCANAnalyzer(AbstractDistanceMeasure distanceMeasure, double eps) {
+	public DBSCANAnalyzer(AbstractDistanceMeasure distanceMeasure) {
 		this.distanceMeasure = distanceMeasure;
-		this.eps = eps;
 		this.minPts = countMinPts(Point3D.SPACE_DIMENSION);
+	}
+
+	public DBSCANAnalyzer(AbstractDistanceMeasure distanceMeasure, double eps) {
+		this(distanceMeasure);
+		this.eps = eps;
+	}
+
+	/**
+	 * Sets the epsilon parameter to algorithm
+	 * 
+	 * @param eps
+	 *            the epsilon parameter
+	 */
+	public void setEps(double eps) {
+		if (eps != this.eps) {
+			this.eps = eps;
+		}
 	}
 
 	/**
@@ -152,7 +168,6 @@ public class DBSCANAnalyzer {
 				current.setClusterIdentifier(clusterIdentifier);
 			}
 		}
-
 	}
 
 	/**
@@ -168,7 +183,7 @@ public class DBSCANAnalyzer {
 	private List<Point3D> getNeighbours(Point3D point, List<Point3D> points) {
 		List<Point3D> neighbours = new ArrayList<Point3D>();
 		for (Point3D neighbour : points) {
-			if (point != neighbour
+			if (!point.equals(neighbour)
 					&& distanceMeasure.dist(neighbour, point) <= this.eps) {
 				neighbours.add(neighbour);
 			}
@@ -201,8 +216,16 @@ public class DBSCANAnalyzer {
 	 * @param lines
 	 *            lines to break into the points
 	 * @return a list of points which belong to the lines
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if the dimension is negative
 	 */
-	private List<Point3D> partitionLinesIntoPoints(List<Line> lines) {
+	public List<Point3D> partitionLinesIntoPoints(List<Line> lines)
+			throws IllegalArgumentException {
+		if (lines == null) {
+			String errorMessage = "The lines argument is not valid.";
+			throw new IllegalArgumentException(errorMessage);
+		}
 		System.out.println("Started partitioning lines into points");
 		List<Point3D> dataset = new ArrayList<Point3D>();
 		for (Line line : lines) {
@@ -257,7 +280,7 @@ public class DBSCANAnalyzer {
 
 		double[] distances = new double[dataset.size()];
 		for (int i = 0; i < dataset.size(); i++) {
-			if (dataset.get(i) != o) {
+			if (!dataset.get(i).equals(o)) {
 				distances[i] = distanceMeasure.dist(dataset.get(i), o);
 			}
 		}
@@ -286,13 +309,7 @@ public class DBSCANAnalyzer {
 			Arrays.sort(kDistancePlotValues, new Comparator<Double>() {
 				@Override
 				public int compare(Double o1, Double o2) {
-					if (o1 == o2) {
-						return 0;
-					} else if (o1 < o2) {
-						return 1;
-					} else {
-						return -1;
-					}
+					return -Double.compare(o1, o2);
 				}
 			});
 			return kDistancePlotValues;
